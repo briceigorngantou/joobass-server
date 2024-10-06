@@ -1,0 +1,160 @@
+image: node:14.19.0
+
+stages:
+  - codequality   
+  - build
+  - test
+  - deployment
+
+cache:
+ paths:
+  - node_modules/
+variables:
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+  GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+sonarcloud-check:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  stage: codequality       
+  script:
+    - sonar-scanner
+  only:
+    - we_remove_sonar#merge_requests
+
+
+install_dependencies:
+ stage: build
+ script:
+  - npm install
+ artifacts:
+   expire_in: 20 mins
+   paths:
+   - node_modules/
+ only:
+   - devops
+   - release
+   - master
+   - hot_fix
+
+unittest_release:
+ stage: test
+ variables:
+   NODE_ENV: production
+   DATABASE_URI: $DATABASE_URI_DEV
+   JWT_SECRET: $JWT_SECRET_DEV
+   EXPIRE_TIME: $EXPIRE_TIME_DEV
+   DATABASE_NAME: $DATABASE_NAME_DEV
+   PAYMENT_TYPE_FEES: $PAYMENT_TYPE_FEES_DEV
+   JOB_PRICE_MIN: $JOB_PRICE_MIN_DEV
+   MAILGUN_API_KEY: $MAILGUN_API_KEY_DEV
+   MAILGUN_DOMAIN: $MAILGUN_DOMAIN_DEV
+   MAILGUN_HOST: $MAILGUN_HOST_DEV
+   RATELIMITER_TIME: $RATELIMITER_TIME
+   USER_API_SMS: $USER_API_SMS
+   PASSWORD_API_SMS: $PASSWORD_API_SMS
+   RATEBLOCKLIMITER_TIME: $RATEBLOCKLIMITER_TIME
+   REDIS_URL: $REDIS_URL
+   NO_MAIL: $NO_MAIL
+   API_KEY_GOOGLE_MAP: $API_KEY_GOOGLE_MAP
+   SR: $SR
+   IP_ADMIN: $IP_ADMIN
+   CTO_MAIL: $CTO_MAIL
+   LOGSENE_TOKEN: $LOGSENE_TOKEN
+   PHONENUMBERS: $PHONENUMBERS
+   FOREST_AUTH_SECRET: $FOREST_AUTH_SECRET
+   FOREST_ENV_SECRET: $FOREST_ENV_SECRET
+   PRERENDER: $PRERENDER
+   MODE_TEST: $MODE_TEST
+ script: npm run test
+ only:
+   - release
+
+unittest_prod:
+  stage: test
+  variables:
+    NODE_ENV: production
+    DATABASE_URI: $DATABASE_URI_PROD
+    JWT_SECRET: $JWT_SECRET_DEV
+    EXPIRE_TIME: $EXPIRE_TIME_DEV
+    DATABASE_NAME: $DATABASE_NAME_PROD
+    JOB_PRICE_MIN: $JOB_PRICE_MIN_DEV
+    PAYMENT_TYPE_FEES: $PAYMENT_TYPE_FEES_PROD
+    MAILGUN_API_KEY: $MAILGUN_API_KEY_DEV
+    MAILGUN_DOMAIN: $MAILGUN_DOMAIN_DEV
+    MAILGUN_HOST: $MAILGUN_HOST_DEV
+    RATELIMITER_TIME: $RATELIMITER_TIME
+    USER_API_SMS: $USER_API_SMS
+    PASSWORD_API_SMS: $PASSWORD_API_SMS
+    RATEBLOCKLIMITER_TIME: $RATEBLOCKLIMITER_TIME
+    REDIS_URL: $REDIS_URL
+    NO_MAIL: $NO_MAIL
+    API_KEY_GOOGLE_MAP: $API_KEY_GOOGLE_MAP
+    SR: $SR
+    IP_ADMIN: $IP_ADMIN
+    CTO_MAIL: $CTO_MAIL
+    LOGSENE_TOKEN: $LOGSENE_TOKEN
+    PHONENUMBERS: $PHONENUMBERS
+    FOREST_AUTH_SECRET: $FOREST_AUTH_SECRET
+    FOREST_ENV_SECRET: $FOREST_ENV_SECRET
+    PRERENDER: $PRERENDER
+    MODE_TEST: $MODE_TEST
+    
+  script: npm run test
+  only:
+    - master
+
+
+release_devops:
+ stage: deployment
+ image: ruby:latest
+ script:
+  - apt-get update -qy
+  - apt-get install -y ruby-dev
+  - gem install dpl
+  - apt install python3-pip -y
+  - pip install awscli --break-system-packages
+#  - pip3 install awscli
+  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+  - dpl --provider=heroku --app=jobaas-backend-cidd --api-key=$HEROKU_API_KEY_DEVOPS --skip-cleanup=true
+ only:
+  - devops
+
+release:
+ stage: deployment
+ image: ruby:latest
+ script:
+  - apt-get update -qy
+  - apt-get install -y ruby-dev
+  - gem install dpl  
+  - apt install python3-pip -y
+  - pip install awscli --break-system-packages
+#  - pip3 install awscli
+  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+  - aws s3 cp  s3://build-react-jobaas-frontend-release react-app/build --recursive --region af-south-1
+  - dpl --provider=heroku --app=jobaas-backend-dev --api-key=$HEROKU_API_KEY_DEV --skip-cleanup=true
+ only:
+  - release
+
+production:
+ stage: deployment
+ image: ruby:latest
+ script:
+  - apt-get update -qy
+  - apt-get install -y ruby-dev
+  - gem install dpl
+  - apt install python3-pip -y
+  - pip install awscli --break-system-packages
+#  - pip3 install awscli
+  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+  - aws s3 cp  s3://build-react-jobaas-frontend-prod react-app/build --recursive --region af-south-1 
+  - dpl --provider=heroku --app=jobaas-backend --api-key=$HEROKU_API_KEY_PROD --skip-cleanup=true
+ only:
+  - master

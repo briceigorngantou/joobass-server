@@ -1,0 +1,5876 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.3.0",
+    "title": "Documentation Api backend",
+    "contact": {
+      "name": "Steve ELANGA",
+      "email": "leonelelanga@yahoo.fr"
+    },
+    "description": "This is the documentation of the Backend Server for Job as a service application. You can test your api and see what params are required for each route in API. Admins can do all actions that the controllers do. When you call the route /me/* you don't need to fill the employee field when the particular is an employee or the employer field when the particular is an employer.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "host": "jobaas.cm",
+  "basePath": "/api/v1",
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "definitions": {
+    "responseGet": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string",
+          "description": "the message of the result"
+        },
+        "data": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "the id of the resource created"
+            }
+          }
+        }
+      }
+    },
+    "notification": {
+      "type": "object",
+      "description": "the collection that will store all notifications",
+      "properties": {
+        "receiver": {
+          "type": "string",
+          "description": "the id of the receiver"
+        },
+        "text": {
+          "type": "string",
+          "description": "the content of the notification"
+        },
+        "type_event": {
+          "type": "string",
+          "description": "the type of the event",
+          "example": "rappel_job",
+          "enum": [
+            "transaction",
+            "rappel_job",
+            "evaluation",
+            "application",
+            "litigation",
+            "recommendation",
+            "job_subscription"
+          ]
+        },
+        "date_event": {
+          "type": "string",
+          "format": "date",
+          "description": "the date of the event"
+        },
+        "notifUrl": {
+          "type": "string",
+          "description": "the url of the notification"
+        },
+        "readState": {
+          "type": "boolean",
+          "description": "was the notification read ?",
+          "example": false
+        },
+        "notifPic": {
+          "type": "string",
+          "description": "the url of the notification"
+        }
+      }
+    },
+    "fileManager": {
+      "type": "object",
+      "description": "the collection that will store all files",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "valid",
+            "invalid"
+          ],
+          "example": "invalid"
+        },
+        "name": {
+          "type": "string",
+          "description": "the name of the file"
+        },
+        "owner": {
+          "type": "string",
+          "description": "who is the owner of this file"
+        },
+        "fileType": {
+          "type": "string",
+          "description": "what is the type of this file ? identitycard ? profileManagerPic",
+          "enum": [
+            "identity",
+            "profileManagerPic",
+            "administrative",
+            "skill",
+            "litigation",
+            "other",
+            "schoolLevel"
+          ],
+          "example": "other"
+        },
+        "fileId": {
+          "type": "string",
+          "description": "the id of the file store"
+        }
+      }
+    },
+    "requestToken": {
+      "description": "object that is used to request a token for secured api",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "email account"
+        },
+        "password": {
+          "type": "string",
+          "description": "password account"
+        }
+      }
+    },
+    "company": {
+      "description": "this collection describes company",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the user who represents the company"
+        },
+        "surname": {
+          "type": "string",
+          "description": "Surame of the user who represents the company"
+        },
+        "phoneNumber": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number"
+            },
+            "valid": {
+              "type": "boolean"
+            }
+          },
+          "description": "the phone number of the user who represents the company"
+        },
+        "phoneNumberCompany": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number"
+            },
+            "valid": {
+              "type": "boolean"
+            }
+          },
+          "description": "the phone number of  the company"
+        },
+        "email": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "format": "email",
+              "example": "leonelelanga@jobaas.cm"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the email of the user representative of the company"
+        },
+        "valid": {
+          "type": "boolean",
+          "description": "is the registration has been validated ?",
+          "default": "False"
+        },
+        "registrationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the account registration"
+        },
+        "website": {
+          "type": "string",
+          "format": "uri",
+          "description": "the website of the company"
+        },
+        "fiscalNumber": {
+          "type": "integer",
+          "description": "the fiscal number of the company"
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "the url link of the image of the company"
+        },
+        "password": {
+          "type": "string",
+          "description": "the hash of the password of the user who represents the company"
+        },
+        "nameCompany": {
+          "type": "string",
+          "description": "Legal name of the company"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "Web_service"
+          ],
+          "description": "The tags which can describe the general missions given by the company"
+        }
+      }
+    },
+    "job": {
+      "description": "this collection describes a job. Many employees can apply to a job. A job was posted by a specific particular or company",
+      "type": "object",
+      "properties": {
+        "registrationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the job registration"
+        },
+        "isValid": {
+          "type": "boolean",
+          "description": "the job has been validated ? yes or no",
+          "example": "false"
+        },
+        "town": {
+          "type": "string",
+          "description": "the town where the job is going to be"
+        },
+        "street": {
+          "type": "string",
+          "description": "the street where the job is going to be"
+        },
+        "referenceStreet": {
+          "type": "string",
+          "description": "a better precision of the location where the job is going to be"
+        },
+        "title": {
+          "type": "string",
+          "description": "the title of the job"
+        },
+        "description": {
+          "type": "string",
+          "description": "the description of the job"
+        },
+        "state": {
+          "type": "string",
+          "description": "the current state of the job. Cancelled means the job seeker cancelled the mission. Deleted means the job provider deleted the mission",
+          "enum": [
+            "in progress",
+            "completed",
+            "created",
+            "paid",
+            "deleted"
+          ],
+          "default": "created"
+        },
+        "employer": {
+          "type": "string",
+          "description": "the id of the employer"
+        },
+        "nbplaces": {
+          "type": "integer",
+          "description": "the number of people required for the job",
+          "minimum": 1,
+          "example": 1
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the first date of the job"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the last date of the job"
+        },
+        "price": {
+          "type": "number",
+          "description": "the price to display in Fcfa"
+        },
+        "employerPayment": {
+          "type": "number",
+          "description": "the price paid by the employer without our taxes",
+          "minimum": 1000,
+          "example": 1000
+        },
+        "frequency": {
+          "type": "object",
+          "description": "the frequency of the job ",
+          "properties": {
+            "value_frequency": {
+              "properties": {
+                "frequencies": {
+                  "type": "string",
+                  "enum": [
+                    "monday",
+                    "tuesday",
+                    "wednesday",
+                    "thursday",
+                    "saturday",
+                    "friday",
+                    "sunday"
+                  ]
+                },
+                "timeSlots": {
+                  "type": "array",
+                  "items": {
+                    "properties": {
+                      "startHour": {
+                        "type": "string"
+                      },
+                      "endHour": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "chooseCandidate": {
+              "type": "boolean",
+              "default": "false",
+              "description": "will the employer chose the candidate himself or not ?"
+            },
+            "isRegular": {
+              "type": "boolean",
+              "default": "false",
+              "description": "the job will be a CDD or not ?"
+            },
+            "listOfDates": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "day": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "timeSlots": {
+                    "type": "array",
+                    "items": {
+                      "properties": {
+                        "startHour": {
+                          "type": "string"
+                        },
+                        "endHour": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "description": "the time slots for all days"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "prerequisites": {
+          "type": "array",
+          "description": "prerequisites of the job",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "description": "the array of tags associated to a job",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nbViews": {
+          "type": "integer",
+          "description": "the number of people who viewed this job",
+          "minimum": 0,
+          "example": 1
+        },
+        "typeEmployer": {
+          "type": "string",
+          "description": "is the employer a particular or a company ?",
+          "enum": [
+            "particular",
+            "company"
+          ],
+          "default": "created"
+        }
+      }
+    },
+    "application": {
+      "description": "this collection will store all applications in the app",
+      "type": "object",
+      "properties": {
+        "employee": {
+          "type": "string",
+          "description": " the id of the employee who wants to apply"
+        },
+        "job": {
+          "type": "string",
+          "description": "the id of the job linked to the application"
+        },
+        "applicationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the application"
+        },
+        "motivations": {
+          "type": "string",
+          "description": "the motivations of the candidate"
+        },
+        "state": {
+          "type": "string",
+          "description": "state of the application",
+          "enum": [
+            "done",
+            "cancelled",
+            "validated",
+            "rejected"
+          ]
+        }
+      }
+    },
+    "transaction": {
+      "description": "this collection will store all money transactions in the apps",
+      "type": "object",
+      "properties": {
+        "emitter": {
+          "type": "string",
+          "description": " the id of the emitter of the payment"
+        },
+        "job": {
+          "type": "string",
+          "description": "the id of the job linked to the transaction"
+        },
+        "receiver": {
+          "type": "string",
+          "description": " the id of the receiver of the payment"
+        },
+        "payment": {
+          "type": "number",
+          "description": "the bill of the job"
+        },
+        "type": {
+          "type": "string",
+          "description": "the type of the transaction",
+          "enum": [
+            "payment",
+            "refund"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "description": "the state of the transaction",
+          "enum": [
+            "failed",
+            "validated"
+          ]
+        },
+        "emissionDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the emission of the transaction"
+        }
+      }
+    },
+    "evaluation": {
+      "description": "this collection will store all employees or employers evaluations",
+      "type": "object",
+      "properties": {
+        "evaluator": {
+          "type": "string",
+          "description": " the id of the evaluator"
+        },
+        "evaluated": {
+          "type": "string",
+          "description": "the id of the evaluated"
+        },
+        "job": {
+          "type": "string",
+          "description": "the id of the job linked to the evaluation"
+        },
+        "jobComments": {
+          "type": "string",
+          "description": "the comments about the job "
+        },
+        "comment": {
+          "type": "string",
+          "description": "the comments about the evaluated given by the evaluator"
+        },
+        "Grade": {
+          "type": "integer",
+          "description": "the grade gave by the evaluator to the evaluated",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "evaluationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the evaluation"
+        }
+      }
+    },
+    "litigation": {
+      "description": "this collection describes a litigation between employer and employee",
+      "type": "object",
+      "properties": {
+        "mission": {
+          "type": "string",
+          "description": "the id of the mission"
+        },
+        "employee": {
+          "type": "string",
+          "description": "the id of the employee"
+        },
+        "description": {
+          "type": "string",
+          "description": "the description of the litigation"
+        },
+        "receiptDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the submit litigation"
+        },
+        "state": {
+          "type": "string",
+          "description": "the state of the litigation",
+          "enum": [
+            "resolved",
+            "in progress",
+            "cancelled"
+          ]
+        },
+        "emitter": {
+          "type": "string",
+          "enum": [
+            "employee",
+            "employer"
+          ],
+          "default": [
+            "employee"
+          ]
+        }
+      }
+    },
+    "administrator": {
+      "type": "object",
+      "properties": {
+        "profession": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the admin",
+          "example": "ELANGA"
+        },
+        "surname": {
+          "type": "string",
+          "description": "Surname of the admin",
+          "example": "Steve"
+        },
+        "phoneNumber": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "example": 33786177030
+            }
+          },
+          "description": "the phone of the admin"
+        },
+        "gender": {
+          "type": "string",
+          "example": "Man"
+        },
+        "email": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "format": "email",
+              "example": "leonelelanga@jobaas.cm"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the email of the admin"
+        },
+        "valid": {
+          "type": "boolean",
+          "description": "is the account valid ?",
+          "default": false
+        },
+        "registrationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the account registration"
+        },
+        "schoolLevel": {
+          "type": "object",
+          "properties": {
+            "level": {
+              "type": "string",
+              "example": "Bac+4",
+              "enum": [
+                "bac+4",
+                "bac+5",
+                "bac+6"
+              ]
+            },
+            "diplomaYear": {
+              "type": "string",
+              "example": "2014"
+            }
+          },
+          "description": "the school level of the admin"
+        },
+        "profilePic": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "example": "https://static.actu.fr/uploads/2020/05/presentation-avatars-fb.jpg"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the profile pic of the admin"
+        },
+        "referenceStreet": {
+          "type": "string",
+          "example": "Ecobank Bonanjo",
+          "description": "a better precision of the location of the admin"
+        },
+        "state": {
+          "type": "array",
+          "example": [
+            "admin"
+          ],
+          "enum": [
+            "supAdmin",
+            "admin",
+            "controller"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "different states (supAdmin, admin, controller) of the admin"
+        },
+        "birthday": {
+          "type": "string",
+          "format": "date",
+          "description": "the birthday of the admin",
+          "example": "1999-01-29"
+        },
+        "password": {
+          "type": "string",
+          "description": "the password hash of the admin"
+        },
+        "town": {
+          "type": "string",
+          "example": "Douala",
+          "description": "the town of the admin"
+        },
+        "street": {
+          "type": "string",
+          "example": "Bonanjo",
+          "description": "the street of the admin"
+        }
+      }
+    },
+    "particular": {
+      "type": "object",
+      "properties": {
+        "initial": {
+          "type": "string",
+          "description": "the inital of the user"
+        },
+        "origin": {
+          "type": "string",
+          "default": "Friends",
+          "enum": [
+            "Friends",
+            "Instagram",
+            "Facebook",
+            "Whatsapp",
+            "LinkedIn",
+            "Youtube"
+          ]
+        },
+        "profession": {
+          "type": "string"
+        },
+        "software": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "MS WORD"
+          ]
+        },
+        "language": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string"
+              },
+              "level": {
+                "type": "string"
+              }
+            }
+          },
+          "example": [
+            {
+              "value": "English",
+              "level": "B2"
+            }
+          ]
+        },
+        "driver_permit": {
+          "properties": {
+            "vehicle": {
+              "type": "string",
+              "enum": [
+                "car",
+                "bike",
+                "bus"
+              ],
+              "example": "car"
+            },
+            "date": {
+              "type": "string",
+              "format": "date"
+            },
+            "category": {
+              "type": "string",
+              "example": "B"
+            },
+            "verified": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "the array of skills of the user"
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the user particular",
+          "example": "ELANGA"
+        },
+        "surname": {
+          "type": "string",
+          "description": "Surname of the user particular",
+          "example": "Steve"
+        },
+        "description": {
+          "type": "string",
+          "description": "the description of the particular"
+        },
+        "MoneyAccount": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "example": [
+            33786177030
+          ],
+          "description": "Money account that will be used to ensure payment transactions"
+        },
+        "phoneNumber": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "number",
+              "example": 33786177030
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the phone of the user particular"
+        },
+        "gender": {
+          "type": "string",
+          "example": "Man"
+        },
+        "email": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "format": "email",
+              "example": "leonelelanga@yahoo.fr"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the email of the user particular"
+        },
+        "valid": {
+          "type": "boolean",
+          "description": "is the account valid ?",
+          "default": false
+        },
+        "registrationDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "the date of the account registration"
+        },
+        "schoolLevel": {
+          "type": "object",
+          "properties": {
+            "level": {
+              "type": "string",
+              "example": "Bac+3"
+            },
+            "diplomaYear": {
+              "type": "string",
+              "example": "2014"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the school level of the user particular"
+        },
+        "profilePic": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "example": "https://static.actu.fr/uploads/2020/05/presentation-avatars-fb.jpg"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          },
+          "description": "the profile pic of the user"
+        },
+        "identityCard": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "example": "https://static.actu.fr/uploads/2020/05/presentation-avatars-fb.jpg"
+            },
+            "valid": {
+              "type": "boolean",
+              "example": false
+            }
+          }
+        },
+        "password": {
+          "type": "string",
+          "description": "the password hash of the user particular"
+        },
+        "town": {
+          "type": "string",
+          "example": "Douala",
+          "description": "the town of the user particular"
+        },
+        "street": {
+          "type": "string",
+          "example": "Bonanjo",
+          "description": "the street of the user particular"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "example": [
+            "Web_service"
+          ]
+        },
+        "referenceStreet": {
+          "type": "string",
+          "example": "Ecobank Bonanjo",
+          "description": "a better precision of the location of the user particular"
+        },
+        "state": {
+          "type": "array",
+          "example": [
+            "employer",
+            "employee"
+          ],
+          "items": {
+            "type": "string"
+          },
+          "description": "different states (employee/employer) of the user particular"
+        },
+        "birthday": {
+          "type": "string",
+          "format": "date",
+          "description": "the birthday of the user",
+          "example": "1999-01-29"
+        }
+      }
+    }
+  },
+  "paths": {
+    "/administrator/profile/me": {
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific admin in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the current admin",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific admin",
+        "summary": "Modify information for a specific admin",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "particular",
+            "in": "body",
+            "description": "updated information about a specific administrator",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated admin",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no administrator was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/{id}": {
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The admin id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific administrator in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the administrator who is searched by id",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no administrator was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific admin",
+        "summary": "Modify information for a specific admin",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The admin id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "administrator",
+            "in": "body",
+            "description": "updated information about a specific administrator",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated admin",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no administrator was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The admin id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Delete a specific administrator in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes the administrator who is searched by id",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no administrator was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    }
+    ,
+    "/administrator/job/{idJob}/choose/{idJober}": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "choose a jober for a specific job",
+        "summary": "choose jober",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idJob",
+            "in": "path",
+            "description": "job  identifier",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "idJober",
+            "in": "path",
+            "description": "jober identifier",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the jober has been saved for the job",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no metafile was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    }
+    ,
+    "/administrator/metafile/{id}": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Change a metafile",
+        "summary": "Update metafile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The metafile id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "metafile updated",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no metafile was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    }
+    ,
+    "/administrator/metafile/{idMeta}/validate": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "validate a metafile for any reason ",
+        "summary": "validate a metafile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idMeta",
+            "in": "path",
+            "description": "The metafile id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "reason",
+            "in": "body",
+            "description": "updated metafile",
+            "type":"string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the metafile was validated"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    }
+    ,
+
+    "/administrator/metafile/{idMeta}/reject": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "reject a metafile for any reason ",
+        "summary": "reject a metafile",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "idMeta",
+            "in": "path",
+            "description": "The metafile id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "reason",
+            "in": "body",
+            "description": "updated metafile",
+            "type":"string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "the metafile was invalidated"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/{id}/role": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Change user role",
+        "summary": "Update user role",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "User id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "in": "body",
+            "description": "updated metafile",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "User role updated",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "404": {
+            "description": "no user was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator": {
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all the administrators",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all the administrators",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Create a new admin",
+        "summary": "Create admin",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "admin",
+            "in": "body",
+            "description": "updated metafile",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin created",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/createController": {
+      "post": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Create a new admin",
+        "summary": "Create admin",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "admin",
+            "in": "body",
+            "description": "updated metafile",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Admin created",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/{id}": {
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the particular who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific particular in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the particular who is searched by id",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "404": {
+            "description": "no particular was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific particular account",
+        "summary": "delete a specific particular account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the particular who will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "particular account deleted successfully"
+          },
+          "404": {
+            "description": "no particular was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific particular",
+        "summary": "Modify information for a specific particular",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "particular",
+            "in": "body",
+            "description": "updated information about a specific particular",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the particular who will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated particular",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "404": {
+            "description": "no particular was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular": {
+      "post": {
+        "tags": [
+          "Controllers",
+          "Particulars"
+        ],
+        "description": "Create new particular in the database. There are some rules like the unicity of the email or phoneNumber",
+        "summary": "create a new particular account",
+        "parameters": [
+          {
+            "name": "particular",
+            "in": "body",
+            "description": "Particular that we want to create",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New Particular is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The particular PageSize that needs to be fetched. Example=10, 20 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The particular pageNo that needs to be fetched. Example=1,2 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all particulars in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/company/{id}": {
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific company account",
+        "summary": "delete a specific company account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the company who will be deleted",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "company account deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Companies",
+          "Controllers"
+        ],
+        "description": "Modify information for a specific company",
+        "summary": "Modify information for a specific company",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "company",
+            "in": "body",
+            "description": "updated information about a specific company",
+            "schema": {
+              "$ref": "#/definitions/company"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the company  that will receive updates",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated company",
+            "schema": {
+              "$ref": "#/definitions/company"
+            }
+          }
+        }
+      }
+    },
+    "/company": {
+      "post": {
+        "tags": [
+          "Companies",
+          "Controllers"
+        ],
+        "description": "Create new company in the database",
+        "summary": "create a new company account",
+        "parameters": [
+          {
+            "name": "company",
+            "in": "body",
+            "description": "Entreprise that we want to create",
+            "schema": {
+              "$ref": "#/definitions/company"
+            }
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "New Entreprise is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "summary": "Get all companys in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/company"
+            }
+          }
+        }
+      }
+    },
+    "/job/{id}/validate": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific job",
+        "summary": "Modify information for a specific job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "validate",
+            "in": "body",
+            "description": "updated information about a specific job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/job/{id}": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific job in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the job with this id",
+            "schema": {
+              "properties": {
+                "data": {
+                  "properties": {
+                    "job": {
+                      "$ref": "#/definitions/job"
+                    },
+                    "infos": {
+                      "type": "string",
+                      "description": "the name and the rating of the employer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific job",
+        "summary": "delete a specific job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "job deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific job",
+        "summary": "Modify information for a specific job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "updated information about a specific job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/job": {
+      "post": {
+        "tags": [
+          "Jobs"
+        ],
+        "description": "Create new job in the database",
+        "summary": "create a new job ",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "Job that we want to create",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": [
+              "create:jobs"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New job was created",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "summary": "Get all jobs in the database",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The job PageSize that needs to be fetched. Example=10, 20 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The job pageNo that needs to be fetched. Example=1,2 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "typeFilter",
+            "in": "query",
+            "description": "if it is raw you can add keywords that will be use to search jobs that contains these keywords in its tile or description",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "keywords that will be use to search jobs that contains that contains these keywords in its tile or description",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          }
+        }
+      }
+    },
+    "/job/:id/employees": {
+      "get": {
+        "tags": [
+          "Jobs"
+        ],
+        "description": "Retrieve all the particular profiles whose applications for the job in parameters have been validated",
+        "summary": "Retrieve a employees hired for a job ",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "params",
+            "description": "Job that we want to get the hired employees",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": [
+              "create:jobs"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Here we get the employees hired for the job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/transaction/{id}": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the transaction who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific transaction in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific transaction",
+        "summary": "delete a specific transaction",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the transaction that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "transaction deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "Modify information for a specific transaction",
+        "summary": "Modify information for a specific transaction",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transaction",
+            "in": "body",
+            "description": "updated information about a specific transaction",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the transaction that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated transaction",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          "404": {
+            "description": "no transaction was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/transaction": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "description": "Create new transaction in the database",
+        "summary": "create a new transaction ",
+        "parameters": [
+          {
+            "name": "transaction",
+            "in": "body",
+            "description": "Transaction that we want to create",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New transaction is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "summary": "Get all transaction in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          }
+        }
+      }
+    },
+    "/tag": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "parameters": [
+          {
+            "name": "",
+            "in": "",
+            "description": "",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "Get all the tags",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Tag"
+            }
+          }
+        }
+      }
+    },
+    "/application/{id}": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the application who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific application in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific application",
+        "summary": "Modify information for a specific application",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "application",
+            "in": "body",
+            "description": "updated information about a specific application",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the application that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated application",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "404": {
+            "description": "no application was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific application",
+        "summary": "delete a specific application",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the application that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "application deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/application/{id}/candidate": {
+      "get": {
+        "tags": [
+          "Applications"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the application",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "candidate",
+            "in": "body",
+            "description": "the candidate who will be got with the application id",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific candidate using an application's id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          }
+        }
+      }
+    },
+    "/application": {
+      "post": {
+        "tags": [
+          "Applications"
+        ],
+        "description": "Create new application in the database",
+        "summary": "create a new application ",
+        "parameters": [
+          {
+            "name": "application",
+            "in": "body",
+            "description": "application that we want to create",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New application is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "summary": "Get all applications in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/{id}": {
+      "get": {
+        "tags": [
+          "Evaluations"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the evaluation who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific evaluation in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific evaluation",
+        "summary": "delete a specific evaluation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the evaluation that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "evaluation deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific evaluation",
+        "summary": "Modify information for a specific evaluation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "evaluation",
+            "in": "body",
+            "description": "updated information about a specific evaluation",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the evaluation that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated evaluation",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          "404": {
+            "description": "no evaluation was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/evaluation": {
+      "post": {
+        "tags": [
+          "Evaluations"
+        ],
+        "description": "Create new evaluation in the database",
+        "summary": "create a new evaluation ",
+        "parameters": [
+          {
+            "name": "evaluation",
+            "in": "body",
+            "description": "Evaluation that we want to create",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New evaluation is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all evaluations in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          }
+        }
+      }
+    },
+    "/evaluation/:userId/evaluations": {
+      "get": {
+        "tags": [
+          "Evaluations"
+        ],
+        "description": "Get all the evaluation a particular have received in his previous jobs as employee",
+        "summary": "Get all the evaluations of a particular ",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "params",
+            "description": "The particular id we want to get his previous evaluations",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evaluations for this user are",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          },
+          "500": {
+            "description": "An error has occured. Please try again!!",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      }
+    },
+    "/litigation/{id}": {
+      "get": {
+        "tags": [
+          "Litigation"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the litigation who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific litigation in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific litigation",
+        "summary": "delete a specific litigation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the litigation that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "litigation deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "description": "Modify information for a specific litigation",
+        "summary": "Modify information for a specific litigation",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "litigation",
+            "in": "body",
+            "description": "updated information about a specific litigation",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the litigation that will receive updates",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated litigation",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          "404": {
+            "description": "no litigation was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/litigation": {
+      "post": {
+        "tags": [
+          "Litigation"
+        ],
+        "description": "Create new litigation in the database",
+        "summary": "create a new litigation ",
+        "parameters": [
+          {
+            "name": "litigation",
+            "in": "body",
+            "description": "Litigation that we want to create",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New litigation is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "summary": "Get all litigation in the database",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          }
+        }
+      }
+    },
+    "/location/{text}": {
+      "get": {
+        "tags": [
+          "location"
+        ],
+        "description": "Get a location",
+        "parameters": [
+          {
+            "name": "text",
+            "in": "path",
+            "description": "the location",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/auth/login/:user": {
+      "post": {
+        "tags": [
+          "authentification"
+        ],
+        "description": "Sign in an user but it is necessary for the user to validate the email before",
+        "summary": "Sign in an user and get a Bearer token for example: Bearer eybscdc",
+        "parameters": [
+          {
+            "name": "requestToken",
+            "in": "body",
+            "description": "credentials to get token",
+            "schema": {
+              "$ref": "#/definitions/requestToken"
+            }
+          },
+          {
+            "name": "user",
+            "in": "path",
+            "description": "is the user administrator or particular or company ?",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "particular",
+              "administrator",
+              "company"
+            ]
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "get token",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "accessToken": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/fileManager/metadata": {
+      "get": {
+        "tags": [
+          "Admins"
+        ],
+        "summary": "Get all metadata",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/fileManager/owner/{id}/metadata/{idMeta}": {
+      "get": {
+        "tags": [
+          "fileManager"
+        ],
+        "summary": "Get a specific metadata for a specific owner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "idMeta",
+            "in": "path",
+            "description": "the id of the metadata",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/fileManager/{idFile}/stream": {
+      "get": {
+        "tags": [
+          "fileManager"
+        ],
+        "summary": "Get a specific stream of a file",
+        "parameters": [
+          {
+            "name": "idFile",
+            "in": "path",
+            "description": "the id of the file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/fileManager/owner/{id}/file": {
+      "post": {
+        "tags": [
+          "fileManager"
+        ],
+        "summary": "create a new file for a specific owner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "fileUploaded": {
+                      "type": "boolean"
+                    },
+                    "metafile": {
+                      "$ref": "#/definitions/fileManager"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "an error occurs in the server"
+          }
+        }
+      }
+    },
+    "/fileManager/owner/{id}/file/{idFile}": {
+      "put": {
+        "tags": [
+          "fileManager"
+        ],
+        "summary": "update a specific file for a specific owner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "idFile",
+            "in": "path",
+            "description": "the id of the file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "fileManager"
+        ],
+        "summary": "delete a specific file for a specific owner",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "idFile",
+            "in": "path",
+            "description": "the id of the file",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "file deleted successfully"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/{id}/verify_account": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "the token that will be used to verify the email account",
+            "required": false,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the email has been verified",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/{id}/verify_account": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the owner",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "the token that will be used to verify the email account",
+            "required": false,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the email has been verified",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/job/{id}": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get a specific job in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the job with this id",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job who will be got",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Delete a specific job in the database",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes the job with this id",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Modify information for a specific job",
+        "summary": "Modify information for a specific job",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "updated information about a specific job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the job that will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "404": {
+            "description": "no job was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/job/{id}/application": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Get an application for a job whose id is filled",
+        "summary": "Get a job application",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "id of the concerned job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "application",
+            "in": "body",
+            "description": "Application for this particular job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ]
+      }
+    },
+    "/administrator/me/job": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Get a particular job",
+        "summary": "Get a job ",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "Job we want to get",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Here's the job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/job": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Create new job in the database",
+        "summary": "create a new job ",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "Job that we want to create",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": [
+              "create:jobs"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New job was created",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Get a particular job",
+        "summary": "Get a job ",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "body",
+            "description": "Job that we want to get",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Here's the job",
+            "schema": {
+              "$ref": "#/definitions/job"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/verify_sms_code": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "pin",
+            "in": "query",
+            "description": "code received by sms",
+            "type": "number"
+          }
+        ],
+        "summary": "Verify the sms code",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the phone number has been verified",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/application": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Create new application in the database",
+        "summary": "create a new application ",
+        "parameters": [
+          {
+            "name": "application",
+            "in": "body",
+            "description": "application that we want to create",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New application is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all applications of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the applications of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/application/{id}": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "application's id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get application of the current user by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the application whose id is filled for the connected particular",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "application's id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "application",
+            "in": "body",
+            "description": "updated informations of the current application whose id is filled",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Update application of the current user by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "application's informations updated",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "application's id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+        }
+      }
+    },
+    "/particular/me/application/:id/candidate": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "application's id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get the candidate by application's id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the application whose id is filled for the connected particular",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/application/:id/appreciate": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "application's id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "appreciate",
+            "in": "body",
+            "description": "updated appreciation for the application whose id is filled by the connected user",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          }
+        ],
+        "summary": "Update the appreciation of the application",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "update the appreciation of the concerned application",
+            "schema": {
+              "$ref": "#/definitions/application"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/litigation": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all litigation of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the litigation of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/litigation/{id}": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Update a particular litigation",
+        "summary": "Update a litigation ",
+        "parameters": [
+          {
+            "name": "litigation",
+            "in": "body",
+            "description": "Litigation that we want to update",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "litigation's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Litigation updated",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "litigation's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get the litigation with this id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the litigation with this id",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "litigation's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Delete the litigation with this id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes the litigation with this particular id",
+            "schema": {
+              "$ref": "#/definitions/litigation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/me/fileManager/file/:idFile": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "the file was updated successfully",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the file was updated",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "the url of the file"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/administrator/me/fileManager/file": {
+      "post": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "fileType",
+            "in": "query",
+            "description": "the file type",
+            "enum": [
+              "identity",
+              "profilePic",
+              "administrative",
+              "skill",
+              "litigation",
+              "other",
+              "schoolLevel",
+              "driver_permit"
+            ],
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "the file was uploaded successfully",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the file was uploaded",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "the url of the file"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/me/fileManager/file/:idFile": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of file",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "the file was updated successfully",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the file was updated",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "the url of the file"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/me/fileManager/file": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "fileType",
+            "in": "query",
+            "description": "the file type",
+            "enum": [
+              "identity",
+              "profilePic",
+              "administrative",
+              "skill",
+              "litigation",
+              "other",
+              "schoolLevel",
+              "driver_permit"
+            ],
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "the file was uploaded successfully",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the file was uploaded",
+            "schema": {
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "the url of the file"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/changePassword": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "password",
+            "in": "body",
+            "description": "the new password",
+            "schema": {
+              "properties": {
+                "password": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "summary": "reset password by adding the password in the body",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "the password was updated",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/resetForgottenPassword/mail": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "description": "the email of the user",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "summary": "send email for updating password",
+        "responses": {
+          "200": {
+            "description": "the email was sent",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/administrator/resetForgottenPassword/mail": {
+      "post": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "description": "the email of the user",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "summary": "send email for updating password",
+        "responses": {
+          "200": {
+            "description": "the email was sent",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/administrator/resetForgottenPassword/mail/{token}": {
+      "put": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "body",
+            "description": "the email of the user",
+            "schema": {
+              "properties": {
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          {
+            "name": "token",
+            "in": "path",
+            "description": "the token of the user we want to send the mail to",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "summary": "replace forgotten password",
+        "responses": {
+          "200": {
+            "description": "the password was replaced",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          }
+        }
+      }
+    },
+    "/particular/me/transaction": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Create new transaction in the database",
+        "summary": "create a new transaction ",
+        "parameters": [
+          {
+            "name": "transaction",
+            "in": "body",
+            "description": "Transaction that we want to create",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New transaction is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all transactions of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the transactions of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/transaction/{id}": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Update a transaction",
+        "summary": "Update a transaction ",
+        "parameters": [
+          {
+            "name": "transaction",
+            "in": "body",
+            "description": "Transaction that we want to update",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "transaction id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction updated",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "transaction id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "summary": "Get a particular transaction",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the transaction with this id",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "transaction id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "summary": "Delete a particular transaction",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes the transaction with this id",
+            "schema": {
+              "$ref": "#/definitions/transaction"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/evaluation": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Create new evaluation in the database",
+        "summary": "create a new evaluation ",
+        "parameters": [
+          {
+            "name": "evaluation",
+            "in": "body",
+            "description": "Evaluation that we want to create",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New evaluation is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all evaluations of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the evaluations of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/evaluation/{id}": {
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Update an evaluation in the database",
+        "summary": "Update an evaluation ",
+        "parameters": [
+          {
+            "name": "evaluation",
+            "in": "body",
+            "description": "Evaluation that we want to update",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Evaluation updated",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "evaluation's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get the evaluation with this id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the evaluation with this id",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "evaluation's id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Delete the evaluation with this id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "deletes the evaluation with this particular id",
+            "schema": {
+              "$ref": "#/definitions/evaluation"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/send_sms_verification": {
+      "post": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Launch the sms verification process",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A code has been generated in  the server and you will receive it",
+            "schema": {
+              "properties": {
+                "message": {
+                  "type": "string"
+                },
+                "data": {
+                  "type": "object",
+                  "properties": {
+                    "messae": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/metafiles": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all metadata for all fils of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all metadatafiles",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/metadatafiles": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all metafiles of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all metafiles",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/metadata/{id}": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "metafile id",
+            "type": "string",
+            "required": true
+          }
+        ],
+        "summary": "Get a metafile by id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns a specific metafile",
+            "schema": {
+              "$ref": "#/definitions/fileManager"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/me/notification": {
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The job PageSize that needs to be fetched. Example=10, 20 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The job pageNo that needs to be fetched. Example=1,2 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all notifications of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all notifications of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/administrator/owner/file/{id}": {
+      "delete": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "file id",
+            "type": "string",
+            "required": true
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Delete a file",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "file deleted",
+            "schema": {
+              "$ref": "#/definitions/administrator"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/particular/me/notification": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The job PageSize that needs to be fetched. Example=10, 20 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The job pageNo that needs to be fetched. Example=1,2 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all notifications of the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns all notifications of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/notification"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/notification": {
+      "post": {
+        "tags": [
+          "Notifications"
+        ],
+        "description": "Create new notification in the database",
+        "summary": "create a notification ",
+        "parameters": [
+          {
+            "name": "notification",
+            "in": "body",
+            "description": "notification that we want to create",
+            "schema": {
+              "$ref": "#/definitions/notification"
+            }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "New notification is created",
+            "schema": {
+              "$ref": "#/definitions/responseGet"
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Controllers"
+        ],
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "The job PageSize that needs to be fetched. Example=10, 20 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The job pageNo that needs to be fetched. Example=1,2 etc.",
+            "required": false,
+            "type": "number"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get all notifications",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the litigation of the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/notification"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+    "/notification/:idNotification": {
+      "delete": {
+        "tags": [
+          "Admins"
+        ],
+        "description": "delete a specific notification",
+        "summary": "delete a specific notification account",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the id of the notification that will be deleted",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "notification account deleted successfully"
+          },
+          "404": {
+            "description": "no notification was found with this id"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+     
+  "/particular/me/bestJobers": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "summary": "Get the jobers's classement ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get the jobers's classement"
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+     
+  "/particular/me/bestJober": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "summary": "Get classement of the  connected user ",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get classement of the  connected user "
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    },
+
+  
+         
+  "/particular/me/change-role": {
+    "get": {
+      "tags": [
+        "Particulars"
+      ],
+      "summary": "add a new role (employee or employer) to the current user  ",
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "add a new role (employee or employer) to the current user r "
+        },
+        "500": {
+          "description": "An error occurs in the server"
+        },
+        "403": {
+          "description": "Your are not allowed to call this API"
+        },
+        "401": {
+          "description": "Unauthorized, please register before calling this API"
+        }
+      }
+    }
+  },
+    "/particular/profile/me": {
+      "get": {
+        "tags": [
+          "Particulars"
+        ],
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "summary": "Get the current user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "returns the particular who is connected",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Particulars"
+        ],
+        "description": "Modify information for a specific particular",
+        "summary": "Modify information for a specific particular",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "particular",
+            "in": "body",
+            "description": "updated information about a specific particular",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the current particular who will receive updates",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "description": "Bearer token for example: Bearer eybscdc",
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "updated particular",
+            "schema": {
+              "$ref": "#/definitions/particular"
+            }
+          },
+          "500": {
+            "description": "An error occurs in the server"
+          },
+          "403": {
+            "description": "Your are not allowed to call this API"
+          },
+          "401": {
+            "description": "Unauthorized, please register before calling this API"
+          }
+        }
+      }
+    }
+  }
+}

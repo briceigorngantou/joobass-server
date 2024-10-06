@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Facture Services JOBAAS</title>
+    <link rel="stylesheet" href="style.css" media="all" />
+  </head>
+  <body>
+    <header class="clearfix">
+      <div id="logo">
+        <img src="logo jobaas.jpg">
+      </div>
+      <div id="company">
+        <h2 class="name">JOBAAS</h2>
+        <div>Douala – Bonanjo -Rue Christian Tobie KUOH</div>
+        <div>+237 690 637 982</div>
+        <div><a href="mailto:info@jobaas.cm">info@jobaas.cm</a></div>
+      </div>
+      </div>
+    </header>
+    <main>
+      <div id="details" class="clearfix">
+        <div id="client">
+          <div class="to">FACTURE POUR:</div>
+          <h2 class="name">#recruiterName</h2> 
+          <div class="address">#recruiterTown</div>
+          <div class="email"><a href="mailto:">#recruiterMAIL</a></div>
+          <div class="email">#recruiterPhone</div>
+        </div>
+        <div id="invoice">
+          <h1>FACTURE</h1>
+          <div class="reference">Reference: #referencePrestation</div>
+          <div class="date">Date de facture: #dateEmissionFacture</div>
+          <div class="date">Date de paiement: #dateLimitePaiement</div>
+        </div>
+      </div>
+      <table border="0" cellspacing="0" cellpadding="0" id="tablePrestations">
+        <thead>
+          <tr>
+            <th class="no">#</th>
+            <th class="desc">DESCRIPTION</th>
+            <th class="unit">PRIX UNITAIRE (FCFA)</th>
+            <th class="qty">QUANTITE</th>
+            <th class="total">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="no">01</td>
+            <td class="desc"><h3>Frais de service</h3>300</td>
+            <td class="unit">0</td>
+            <td class="qty">1</td>
+            <td class="total">0</td>
+          </tr>
+          <tr>
+            <td class="no">02</td>
+            <td class="desc"><h3>Plateforme Emploi : formule gratuite</h3>ideale pour gerer vous-même votre recrutement</td>
+            <td class="unit">0</td>
+            <td class="qty">1</td>
+            <td class="total">0</td>
+          </tr>
+          ${rows}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"></td>
+            <td colspan="2">PRIX TOTAL (T.T.C)</td>
+            <td>#prixTotalTTC</td>
+          </tr>
+        </tfoot>
+      </table>
+      <div id="thanks">Thank you!</div>
+      <div id="notices">
+        <div>NOTICE:</div>
+        <div class="notice">DES FRAIS SUPPLEMENTAIRES PEUVENT S'APPLIQUER POUR TOUT RETARD DE PAIEMENT DE PLUS DE 30 JOURS</div>
+      </div>
+    </main>
+    <footer>
+      POUR TOUTE QUESTION RELATIVE A CETTE FACTURE, MERCI DE NOUS CONTACTER PAR MAIL OU TELEPHONE : info@jobaas.cm / +237 690 637 982
+    </footer>
+  </body>
+</html>
